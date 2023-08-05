@@ -33,6 +33,20 @@ spec:
             requests:
               memory: "{{ .Values.connector_bulk.requests.memory }}"
               cpu: "{{ .Values.connector_bulk.requests.cpu }}"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 30
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "echo SEND ERROR MESSAGE TO ELASTICSEARCH HERE"]
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 5000              
           env:
             - name: "SPRING_PROFILES_ACTIVE"
               value: "{{ .Values.connector_bulk.SPRING_PROFILES_ACTIVE }}"
